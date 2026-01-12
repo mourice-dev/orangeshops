@@ -46,9 +46,13 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to the E-commerce API" });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes);
+const router = express.Router();
+router.use("/auth", authRoutes);
+router.use("/products", productRoutes);
+router.use("/cart", cartRoutes);
+
+app.use("/api", router);
+app.use("/.netlify/functions/api", router);
 
 app.get("/healthz", async (req, res) => {
   try {
