@@ -41,6 +41,32 @@ const createTables = async () => {
     `);
     console.log("Table 'carts' created successfully.");
 
+    // Create session table for connect-pg-simple
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS session (
+        sid varchar NOT NULL COLLATE "default",
+        sess json NOT NULL,
+        expire timestamp(6) NOT NULL
+      )
+      WITH (OIDS=FALSE);
+    `);
+    // Add constraints and indices if they don't exist (handled by catch normally, but being safe)
+    try {
+      await pool.query(
+        `ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;`
+      );
+    } catch (e) {
+      /* ignore if exists */
+    }
+    try {
+      await pool.query(
+        `CREATE INDEX "IDX_session_expire" ON "session" ("expire");`
+      );
+    } catch (e) {
+      /* ignore if exists */
+    }
+    console.log("Table 'session' created successfully.");
+
     // Seed products if empty
     const countResult = await pool.query("SELECT COUNT(*) FROM products");
     if (parseInt(countResult.rows[0].count) === 0) {
