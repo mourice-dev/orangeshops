@@ -24,7 +24,7 @@ app.use(
       pool: pool,
       createTableIfMissing: true,
     }),
-    secret: "secret-key",
+    secret: process.env.SECRET_KEY || "secret-key",
     resave: false,
     saveUninitialized: false,
     cookie: {
