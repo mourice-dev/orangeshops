@@ -66,6 +66,14 @@ const Products = () => {
 
     fetchProducts();
     fetchUser();
+
+    // Listen for auth updates (login/logout) to refresh user name
+    const handleAuthUpdate = () => fetchUser();
+    window.addEventListener("authUpdated", handleAuthUpdate);
+
+    return () => {
+      window.removeEventListener("authUpdated", handleAuthUpdate);
+    };
   }, []);
 
   const addToCart = async (productId: number) => {
