@@ -64,10 +64,17 @@ app.get("/healthz", async (req, res) => {
   }
 });
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  app.listen(PORT, () => {
-    console.log(`server run on ${PORT}`);
-  });
+// Ensure we don't crash in environments where import.meta.url might be undefined (like bundled serverless functions)
+if (import.meta.url) {
+  try {
+    if (process.argv[1] === fileURLToPath(import.meta.url)) {
+      app.listen(PORT, () => {
+        console.log(`server run on ${PORT}`);
+      });
+    }
+  } catch (err) {
+    console.log('Not running directly or environment specific setup skipped');
+  }
 }
 
 export default app;
